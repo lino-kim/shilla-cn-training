@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>신라면세점 중국 고객 응대 AI 평가</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#463C38;      /* Shilla charcoal brown */
+  --ink-2:#6B5F5A;
+  --red:#E63C36;      /* Shilla red */
+  --red-d:#C92E29;
+  --red-soft:#FDEDEC;
+  --bg:#F4F2F1;
+  --card:#FFFFFF;
+  --line:#E6E1DF;
+  --muted:#8A807C;
+  --soft:#F8F6F5;
+  --ok:#2E7D5B; --b:#3B6FB6; --c:#8A6D1E; --d:#E63C36; --e:#7A716D; --x:#1F1A18;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:#2A2422;font-family:"Noto Sans KR","Noto Sans SC",system-ui,sans-serif;font-size:15px;line-height:1.5}
+.zh{font-family:"Noto Sans SC","Noto Sans KR",sans-serif}
+button,select,input,textarea{font:inherit;color:inherit}
+.wrap{max-width:1000px;margin:0 auto;padding:16px 16px 60px;position:relative;z-index:1}
+/* header */
+.brand{display:flex;align-items:center;gap:12px;margin:4px 0 14px}
+.brand .mark{display:flex;border-radius:4px;overflow:hidden;font-weight:500;letter-spacing:.02em;font-size:13px}
+.brand .mark span{padding:4px 9px;color:#fff}
+.brand .mark .a{background:var(--ink)}
+.brand .mark .b{background:var(--red)}
+.brand h1{font-size:17px;margin:0;font-weight:700;color:var(--ink)}
+.brand small{display:block;color:var(--muted);font-size:12px;font-weight:400}
+/* tabs */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 18px;font-weight:700;font-size:14px;cursor:pointer;color:var(--ink)}
+.tab.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+.card h2{font-size:16px;margin:0 0 14px;color:var(--ink)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+label.f{display:block;font-weight:700;font-size:14px;margin:14px 0 6px;color:var(--ink)}
+label.f em{color:var(--red);font-style:normal}
+.inp,select.inp,textarea.inp{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff;outline:none}
+.inp:focus{border-color:var(--ink)}
+.inp[readonly]{background:var(--soft);color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+.btn{border:0;border-radius:10px;padding:12px 18px;font-weight:700;cursor:pointer;background:var(--soft);color:var(--ink);border:1px solid var(--line)}
+.btn.primary{background:var(--red);color:#fff;border-color:var(--red)}
+.btn.primary:hover{background:var(--red-d)}
+.btn.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.ghost{background:#fff}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:8px}
+.btn.block{width:100%;padding:15px;font-size:16px;margin-top:18px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;background:var(--red-soft);color:var(--red-d)}
+.muted{color:var(--muted)}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{flex:1;border:0;background:#fff;padding:11px;cursor:pointer;font-weight:700;color:var(--muted)}
+.seg button.on{background:var(--ink);color:#fff}
+/* carousel */
+.how{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:6px}
+.how-h{display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;font-weight:700}
+.how-h .t{color:var(--red)}
+.how-b{display:flex;align-items:center;gap:6px;padding:18px 8px 10px}
+.how-b .arr{border:0;background:none;font-size:30px;color:var(--red);cursor:pointer;padding:0 8px;font-weight:900}
+.how-b .arr:disabled{color:#F3C1BF;cursor:default}
+.slide{flex:1}
+.slide h3{font-size:22px;margin:0 0 14px 6px;color:#1F1A18}
+.sbox{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 4px 14px rgba(70,60,56,.08)}
+.sbox .num{display:inline-flex;width:36px;height:36px;border-radius:50%;background:var(--ink);color:#fff;align-items:center;justify-content:center;font-weight:900;margin-right:10px}
+.sbox .ttl{display:flex;align-items:center;font-weight:700;margin-bottom:12px}
+.bubble-demo{border:1.5px solid var(--red);border-radius:10px;padding:8px 12px;background:#fff;font-size:14px}
+.bubble-demo small{display:block;color:var(--red);font-size:11px;font-weight:700}
+.how-cap{margin:10px 14px 4px;background:var(--red-soft);color:var(--red-d);border-radius:999px;text-align:center;padding:8px;font-weight:700;font-size:14px}
+.dots{display:flex;gap:6px;justify-content:center;padding:10px;border-top:1px solid var(--line)}
+.dots i{width:8px;height:8px;border-radius:99px;background:#DDD6D3}
+.dots i.on{width:22px;background:var(--red)}
+/* chat */
+.chat-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.prog{flex:1;min-width:140px;height:8px;background:var(--soft);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.prog i{display:block;height:100%;background:var(--red);transition:width .3s}
+.chat{display:flex;flex-direction:column;gap:12px;min-height:300px;max-height:58vh;overflow:auto;padding:4px 2px 10px}
+.msg{max-width:84%;border-radius:14px;padding:12px 14px}
+.msg.c{background:var(--soft);border:1px solid var(--line);align-self:flex-start;border-top-left-radius:4px}
+.msg.s{background:var(--ink);color:#fff;align-self:flex-end;border-top-right-radius:4px;white-space:pre-wrap}
+.msg .who{font-size:11px;font-weight:700;color:var(--red);margin-bottom:4px;display:flex;gap:8px;align-items:center}
+.msg .zhl{font-size:18px;font-weight:500;color:#1F1A18}
+.msg .py{font-size:12px;color:var(--muted);margin-top:2px}
+.msg .ko{font-size:13px;color:var(--ink-2);margin-top:6px;border-top:1px dashed var(--line);padding-top:6px}
+.icon-btn{border:1px solid var(--line);background:#fff;border-radius:99px;padding:1px 8px;font-size:11px;cursor:pointer;color:var(--ink)}
+.typing{align-self:flex-start;color:var(--muted);font-size:13px;padding:6px 4px}
+.composer{display:flex;gap:8px;margin-top:10px;align-items:flex-end}
+.composer textarea{flex:1;resize:none;min-height:56px;max-height:160px}
+.hint{background:#FFF8E6;border:1px solid #F1DFA8;border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14px}
+.hint .zhl{font-size:16px;font-weight:500}
+/* result */
+.score-hero{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.score-hero .big{font-size:56px;font-weight:900;color:var(--ink);line-height:1}
+.score-hero .big small{font-size:18px;color:var(--muted);font-weight:500}
+.grade{display:inline-block;border-radius:999px;padding:4px 14px;font-weight:900;color:#fff;font-size:14px}
+.g-A{background:var(--ok)}.g-B{background:var(--b)}.g-C{background:var(--c)}.g-D{background:var(--d)}.g-E{background:var(--e)}.g-X{background:var(--x)}
+.crit{display:grid;grid-template-columns:150px 1fr 56px;gap:8px 12px;align-items:center;margin-top:16px;font-size:14px}
+.bar{height:10px;background:var(--soft);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:var(--ink)}
+.bar i.low{background:var(--red)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.two{grid-template-columns:1fr}.crit{grid-template-columns:110px 1fr 50px}}
+.box{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--soft)}
+.box h4{margin:0 0 8px;font-size:14px}
+.box ul{margin:0;padding-left:18px}
+.corr{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px}
+.corr .q{font-size:13px;color:var(--muted)}
+.corr .mine{font-size:14px;margin:4px 0;text-decoration:line-through;text-decoration-color:#E63C3666}
+.corr .better{font-size:16px;font-weight:500}
+/* tables */
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{background:var(--ink);color:#fff;text-align:left;padding:10px 12px;font-weight:700;white-space:nowrap}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl tr.click{cursor:pointer}
+.tbl tr.click:hover td{background:var(--soft)}
+.tbl.light th{background:var(--red-soft);color:var(--red-d)}
+.tbl.light td,.tbl.light th{text-align:center}
+.tbl.light td:first-child,.tbl.light th:first-child{text-align:left}
+.tbl tr.total td{background:var(--soft);font-weight:700}
+.scroll{overflow-x:auto}
+.kpis{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:12px;align-items:baseline}
+.kpis b{font-size:22px;color:var(--red);font-weight:900}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+.report-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.report-row:last-child{border-bottom:0}
+.report-row b{min-width:110px}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(31,26,24,.45);display:flex;align-items:flex-start;justify-content:center;padding:30px 12px;overflow:auto;z-index:20}
+.modal .card{max-width:860px;width:100%}
+.notice{background:var(--red-soft);color:var(--red-d);border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px}
+.phr{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.phr .p{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
+.phr .p .zhl{font-size:17px;font-weight:500}
+.phr .p .py{font-size:12px;color:var(--muted)}
+.phr .p .ko{font-size:13px;color:var(--ink-2);margin-top:4px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:700;color:var(--ink-2)}
+.chip.on{background:var(--red);border-color:var(--red);color:#fff}
+/* watermark */
+#wm{position:fixed;inset:0;pointer-events:none;z-index:30;overflow:hidden;opacity:.07}
+#wm div{position:absolute;white-space:nowrap;transform:rotate(-24deg);font-size:15px;font-weight:700;color:var(--ink)}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp 0.8s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.rep h3{font-size:15px;margin:22px 0 8px;color:var(--ink);border-left:4px solid var(--red);padding-left:8px}
+.rep .lead{background:var(--soft);border-radius:10px;padding:12px 14px;font-weight:500}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:12px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stat small{color:var(--muted);font-size:12px;display:block}
+.stat b{font-size:19px}
+</style>
+</head>
+<body>
+<div id="wm"></div>
+<div class="wrap">
+  <div class="brand">
+    <div class="mark"><span class="a">신라면세점</span><span class="b">中国顾客</span></div>
+    <h1>중국 고객 응대 AI 실시간 평가<small>판매 직원 역량 강화 프로그램 · AI 가상고객과 중국어 응대 실습</small></h1>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div id="view"></div>
+</div>
+<div id="modal"></div>
+
+<script>
+/* ================= 데이터 ================= */
+const CRIT = [
+  ['greet','첫인사·환영',10],
+  ['needs','고객 니즈 파악',10],
+  ['product','상품 설명 정확성',15],
+  ['rule','면세 절차·규정 안내',10],
+  ['chinese','중국어 표현 정확성',15],
+  ['sell','업셀링·크로스셀링',15],
+  ['handle','문의·클레임 대응',15],
+  ['basic','마무리·응대 기본기',10],
+];
+const ITEMS = [
+  {id:'cos',  name:'화장품·스킨케어', kind:'상품', brief:'한국 스킨케어(에센스·크림·마스크팩) 세트. 피부 타입별 추천, 선물 포장, 세트 구성·프로모션, 브랜드별 1인 구매수량 제한이 있을 수 있음.'},
+  {id:'perf', name:'향수·색조 메이크업', kind:'상품', brief:'향수 노트(시트러스·플로럴·우디) 설명, 테스터 시향, 립·쿠션 색상 추천, 선물용 구성.'},
+  {id:'liq',  name:'주류·담배', kind:'상품', brief:'위스키·전통주·담배. 액체류는 기내 반입 규정상 공항 인도장 수령, 중국 입국 시 반입 한도는 중국 세관 기준이라 고객 확인 필요.'},
+  {id:'lux',  name:'명품 잡화(가방·시계)', kind:'상품', brief:'재고 확인, 정품 보증서, 해외 A/S 안내, 달러 가격·환율, 인기 모델 품절 시 대체 제안.'},
+  {id:'food', name:'식품·건강(홍삼 등)', kind:'상품', brief:'홍삼·김·과자 등 선물용 식품. 복용법, 유통기한, 중국 반입 가능 여부 고객 확인 필요, 대량 구매 포장.'},
+  {id:'rule', name:'면세 절차·인도장 안내', kind:'문의', brief:'구매 시 여권·출국 항공편 정보 필요, 시내점 구매 상품은 출국 당일 공항 인도장 수령, 인도장 위치·마감 시간, 교환권 지참.'},
+  {id:'pay',  name:'결제·할인 문의', kind:'문의', brief:'알리페이·위챗페이·은련카드 결제, 달러 표시 가격과 원화/위안 환산, 쿠폰·적립금·할인 중복 여부.'},
+  {id:'cl1',  name:'클레임: 인도장 상품 누락·파손', kind:'클레임', brief:'공항 인도장에서 구매 상품 일부가 없거나 파손. 탑승 시간 임박. 공감·사과→사실 확인→해결책(재확인, 대체, 사후 배송·환불 절차 안내)→재확인.'},
+  {id:'cl2',  name:'클레임: 교환·환불 요청', kind:'클레임', brief:'구매 후 색상·용량 착오로 교환/환불 요청. 개봉 여부, 영수증·여권, 출국 전/후 절차 차이, 책임자 연결.'},
+  {id:'cl3',  name:'클레임: 대기 지연·응대 불만', kind:'클레임', brief:'계산 대기가 길고 직원이 무시했다고 항의. 감정 진정, 진심 어린 사과, 신속 처리, 재발 방지 약속.'},
+];
+const TYPES = [
+  {id:'young',  name:'20대 여성 개별관광객', d:'샤오홍슈(小红书)에서 본 인기 제품을 찾음. 트렌드에 민감하고 휴대폰 사진을 보여주며 질문. 가격 비교를 많이 함.'},
+  {id:'couple', name:'30대 신혼부부', d:'신혼여행 중. 서로 선물, 양가 부모님 선물 고민. 의견을 나누며 천천히 고름.'},
+  {id:'parent', name:'50대 부모(가족 선물용)', d:'친척·지인 선물을 여러 개 사야 함. 가성비와 실용성 중시. 중국어 표준어에 약간 지방 억양.'},
+  {id:'group',  name:'단체관광객(시간 부족)', d:'가이드 집합까지 20분 남음. 빠른 결정과 빠른 결제를 원함. 조금 조급함.'},
+  {id:'vip',    name:'VIP 재방문 고객', d:'고가 구매 경험 다수. 서비스 기대치가 높고 전문적인 설명을 원함. 무성의하면 바로 불쾌감 표시.'},
+  {id:'biz',    name:'비즈니스 출장객', d:'출장 마지막 날. 거래처 선물 구매. 효율적 응대, 영수증·포장 중시.'},
+];
+const STORES = ['서울점','제주점','인천공항 T1','인천공항 T2','김포공항점','신라아이파크면세점','본사·교육팀'];
+const TURNS = 5;
+
+const PHRASES = {
+  '인사·환영':[
+    ['您好，欢迎光临新罗免税店！','Nín hǎo, huānyíng guānglín Xīnluó miǎnshuìdiàn!','안녕하세요, 신라면세점에 오신 것을 환영합니다!','눈을 맞추고 밝은 톤으로. 你 대신 您을 쓰는 것이 기본입니다.'],
+    ['请问您需要什么帮助吗？','Qǐngwèn nín xūyào shénme bāngzhù ma?','어떤 도움이 필요하신가요?',''],
+    ['请随便看看，有需要随时叫我。','Qǐng suíbiàn kànkan, yǒu xūyào suíshí jiào wǒ.','편하게 둘러보시고 필요하시면 언제든 불러주세요.','바로 따라붙지 말고 여유를 주는 멘트.'],
+  ],
+  '니즈 파악':[
+    ['请问是您自己用还是送人？','Qǐngwèn shì nín zìjǐ yòng háishi sòng rén?','본인 사용이세요, 선물하실 건가요?','추천 전에 반드시 한 번은 묻기 — 니즈 파악 점수의 핵심.'],
+    ['请问您是什么肤质？','Qǐngwèn nín shì shénme fūzhì?','피부 타입이 어떻게 되세요?',''],
+    ['您的预算大概是多少？','Nín de yùsuàn dàgài shì duōshao?','예산은 어느 정도 생각하세요?','부담스럽지 않게 웃으며.'],
+  ],
+  '상품 안내':[
+    ['这款是我们店的人气商品。','Zhè kuǎn shì wǒmen diàn de rénqì shāngpǐn.','이 제품은 저희 매장 인기 상품입니다.',''],
+    ['这款保湿效果很好，适合干性皮肤。','Zhè kuǎn bǎoshī xiàoguǒ hěn hǎo, shìhé gānxìng pífū.','보습력이 좋아 건성 피부에 잘 맞습니다.',''],
+    ['您可以先试用一下。','Nín kěyǐ xiān shìyòng yíxià.','먼저 한번 테스트해 보세요.',''],
+    ['现在买套装更划算，还有赠品。','Xiànzài mǎi tàozhuāng gèng huásuàn, hái yǒu zèngpǐn.','지금 세트로 사시면 더 이득이고 사은품도 있어요.','업셀링 기본 멘트.'],
+    ['这款和这个一起用效果更好。','Zhè kuǎn hé zhège yìqǐ yòng xiàoguǒ gèng hǎo.','이 제품은 이것과 함께 쓰시면 효과가 더 좋습니다.','크로스셀링 기본 멘트.'],
+  ],
+  '면세 절차':[
+    ['请出示您的护照和登机信息。','Qǐng chūshì nín de hùzhào hé dēngjī xìnxī.','여권과 탑승 정보를 보여주세요.',''],
+    ['请问您哪天、几点的航班？','Qǐngwèn nín nǎ tiān, jǐ diǎn de hángbān?','출국은 언제, 몇 시 비행기세요?',''],
+    ['商品需要在机场提货处领取。','Shāngpǐn xūyào zài jīchǎng tíhuòchù lǐngqǔ.','상품은 공항 인도장에서 수령하셔야 합니다.',''],
+    ['请保管好这张提货单。','Qǐng bǎoguǎn hǎo zhè zhāng tíhuòdān.','이 교환권을 잘 보관해 주세요.','수령 시 교환권·여권 지참 안내까지.'],
+  ],
+  '결제':[
+    ['可以用支付宝、微信支付和银联卡。','Kěyǐ yòng Zhīfùbǎo, Wēixìn Zhīfù hé Yínlián kǎ.','알리페이, 위챗페이, 은련카드 사용 가능합니다.',''],
+    ['一共是两百美元。','Yígòng shì liǎngbǎi měiyuán.','총 200달러입니다.','숫자는 천천히, 손가락·계산기로 함께 보여주기.'],
+    ['请您确认一下金额。','Qǐng nín quèrèn yíxià jīn\'é.','금액 확인 부탁드립니다.',''],
+  ],
+  '클레임 대응':[
+    ['非常抱歉给您带来不便。','Fēicháng bàoqiàn gěi nín dàilái búbiàn.','불편을 드려 정말 죄송합니다.','먼저 사과, 변명은 나중에.'],
+    ['我理解您的心情。','Wǒ lǐjiě nín de xīnqíng.','고객님 마음 충분히 이해합니다.','공감 표현.'],
+    ['请稍等，我马上帮您确认。','Qǐng shāo děng, wǒ mǎshàng bāng nín quèrèn.','잠시만요, 바로 확인해 드리겠습니다.',''],
+    ['我请负责人来为您处理。','Wǒ qǐng fùzérén lái wèi nín chǔlǐ.','책임자를 모셔서 처리해 드리겠습니다.','본인 권한 밖이면 빠르게 연결.'],
+  ],
+  '마무리':[
+    ['还有其他需要的吗？','Hái yǒu qítā xūyào de ma?','다른 필요하신 건 없으세요?','마무리 전 마지막 추가 제안 기회.'],
+    ['谢谢光临，祝您旅途愉快！','Xièxie guānglín, zhù nín lǚtú yúkuài!','방문 감사합니다, 즐거운 여행 되세요!',''],
+    ['欢迎下次再来！','Huānyíng xià cì zài lái!','다음에 또 오세요!',''],
+  ],
+};
+
+/* ================= 상태 ================= */
+const S = {
+  tab:'start', slide:0,
+  me:{name:'',empNo:'',store:'',itemId:'',typeId:'random',mode:'eval'},
+  session:null,         // {item,type,turns:[{c:{zh,pinyin,ko},a}],busy,done,hint,showKo}
+  result:null,
+  records:[],           // flattened attempts
+  loaded:false,
+  month: new Date().toISOString().slice(0,7),
+  storeFilter:'', itemFilter:'',
+  phraseCat:'인사·환영',
+  reports:{},           // key -> ai feedback
+};
+let DB=null, USER=null, UID=null, SAMPLE=null, ADMIN=false;
+
+/* ================= 유틸 ================= */
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const gradeOf = t=> t>=90?'A':t>=80?'B':t>=70?'C':t>=60?'D':t>=30?'E':'X';
+const gradeLabel = g=> g==='X'?'등급외':g+'등급';
+const gradeTag = t=>{const g=gradeOf(t);return `<span class="grade g-${g}">${gradeLabel(g)}</span>`};
+const fmtDT = iso=>{const d=new Date(iso);const p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`};
+const itemName = id=>(ITEMS.find(i=>i.id===id)||{}).name||id;
+function speak(text){
+  try{const u=new SpeechSynthesisUtterance(text);u.lang='zh-CN';u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}
+}
+function toast(msg){
+  const el=document.createElement('div');el.textContent=msg;
+  el.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1F1A18;color:#fff;padding:10px 16px;border-radius:10px;z-index:50;font-size:14px';
+  document.body.appendChild(el);setTimeout(()=>el.remove(),2600);
+}
+async function copyText(t){try{await navigator.clipboard.writeText(t);toast('복사되었습니다')}catch(e){toast('복사할 수 없는 환경입니다')}}
+function setWatermark(){
+  const wm=$('#wm');const n=S.me.name?`${S.me.name}${S.me.empNo?'('+S.me.empNo+')':''} | ${new Date().toLocaleDateString('ko-KR')}`:'';
+  if(!n){wm.innerHTML='';return}
+  let h='';for(let y=0;y<14;y++)for(let x=0;x<5;x++)h+=`<div style="top:${y*180-60}px;left:${x*320+(y%2)*160-100}px">${esc(n)}</div>`;
+  wm.innerHTML=h;
+}
+
+/* ================= AI ================= */
+async function askJSON(prompt, tier='default'){
+  if(!SAMPLE) throw {code:'no_ai'};
+  let v;
+  if(typeof SAMPLE.json==='function'){ v = await SAMPLE.json(prompt,{modelTier:tier}); }
+  else { const r = await SAMPLE(prompt,{modelTier:tier}); v = r.text; }
+  if(typeof v==='string'){ const m=v.match(/\{[\s\S]*\}/); v=JSON.parse(m?m[0]:v); }
+  return v;
+}
+function transcriptText(turns){
+  return turns.map((t,i)=>`[Q${i+1}] 고객: ${t.c.zh}${t.a!=null?`\n[A${i+1}] 직원: ${t.a}`:''}`).join('\n');
+}
+function personaBlock(item,type){
+  return `■ 장소: 신라면세점(新罗免税店) ${S.me.store||'서울점'} 매장
+■ 평가 품목: ${item.name} — ${item.brief}
+■ 고객 유형: ${type.name} — ${type.d}`;
+}
+async function aiCustomer(sess){
+  const n = sess.turns.length; // 다음 질문 번호 = n+1
+  const prompt = `너는 한국의 신라면세점 매장을 방문한 중국인 관광객을 연기한다. 직원 교육용 롤플레이다.
+${personaBlock(sess.item,sess.type)}
+
+규칙:
+- 반드시 간체 중국어 구어체로, 한 번에 질문 하나만 1~2문장으로 말한다. 너무 길게 말하지 않는다.
+- 총 ${TURNS}개의 질문을 한다. 지금은 ${n+1}번째 질문이다.
+- 질문 흐름: 1번은 방문 목적이 드러나는 첫 질문, 중간은 상품 특징·비교·가격·규정(여권/인도장/결제) 등 품목에 맞는 실전 질문, ${TURNS}번째는 결제·수령·마무리와 관련된 질문.
+- 직전 직원 답변을 듣고 자연스럽게 이어서 묻는다. 직원 답이 부정확하거나 성의 없으면 되묻거나 불만을 드러낸다. 직원이 한국어만 쓰면 "听不太懂"처럼 반응한다.
+- 클레임 품목이면 처음엔 감정이 격하고, 직원의 공감·사과·해결 제시 정도에 따라 누그러진다.
+- 직원이 묻지 않으면 예산·용도 같은 정보는 먼저 말하지 않는다(니즈 파악 평가를 위해).
+
+지금까지 대화:
+${n?transcriptText(sess.turns):'(아직 없음 — 첫 질문을 하라)'}
+
+JSON만 출력: {"zh":"중국어 발화","pinyin":"성조 표기 병음","ko":"자연스러운 한국어 뜻"}`;
+  return askJSON(prompt,'quick');
+}
+async function aiHint(sess){
+  const prompt = `너는 10년 경력의 면세점 서비스 교육 강사다. 신라면세점 직원이 중국인 고객에게 다음에 할 모범 답변을 제시하라.
+${personaBlock(sess.item,sess.type)}
+대화:
+${transcriptText(sess.turns)}
+마지막 고객 질문에 대한 직원의 모범 답변(간체 중국어, 2~3문장, 您 사용, 가능하면 니즈 질문 또는 연관상품 제안 1개 포함). 규정 수치는 확실하지 않으면 단정하지 말고 "확인해 드리겠다"로 처리.
+JSON만: {"zh":"","pinyin":"","ko":"한국어 뜻","tip":"강사 코칭 한 줄(한국어)"}`;
+  return askJSON(prompt,'quick');
+}
+async function aiEvaluate(sess){
+  const prompt = `너는 10년 경력의 면세점 판매·서비스 교육 강사이자 평가자다. 신라면세점 직원이 AI 중국인 가상고객과 나눈 응대를 8개 항목(총 100점)으로 엄정하게 평가하라.
+${personaBlock(sess.item,sess.type)}
+
+대화 전문:
+${transcriptText(sess.turns)}
+
+평가 항목(배점):
+1 greet 첫인사·환영(10): 첫 응대의 환영 인사, 您 사용, 밝은 태도
+2 needs 고객 니즈 파악(10): 용도·대상·피부타입·예산·일정 등 질문으로 니즈 확인. 질문 시도 자체가 없으면 0점
+3 product 상품 설명 정확성(15): 품목 특징·강점을 정확하고 구체적으로 설명, 실생활 활용 예
+4 rule 면세 절차·규정 안내(10): 여권·항공편·인도장 수령·결제수단 등 필요한 안내. 대화상 필요 없었으면 기본 안내 여부로 판단
+5 chinese 중국어 표현 정확성(15): 문법·어휘·자연스러움. 한국어로만 답하면 최대 3점
+6 sell 업셀링·크로스셀링(15): 세트·상위 제품·연관 상품·프로모션 제안. 시도가 없으면 0점
+7 handle 문의·클레임 대응(15): 질문에 정확히 답했는지, 클레임이면 공감→사과→해결→재확인 순서
+8 basic 마무리·응대 기본기(10): 마무리 인사, 간결한 전달, 불필요한 반복 없음
+- 면세 한도·수량 같은 규정 수치는 사내 최신 지침에 따르므로, 직원이 수치를 단정했는데 확실히 틀린 경우만 지적하고 애매하면 "최신 지침 확인 권장"으로 코멘트.
+- 피드백은 모두 한국어. corrections는 직원 답변 중 개선 효과가 큰 2~3개에 대해 더 나은 중국어 답변을 제시.
+
+JSON만 출력:
+{"scores":{"greet":0,"needs":0,"product":0,"rule":0,"chinese":0,"sell":0,"handle":0,"basic":0},
+"summary":"총평 1~2문장",
+"good":["잘한 점",""],
+"improve":["개선할 점",""],
+"corrections":[{"q":"해당 고객 질문(중국어)","mine":"직원 원래 답변","better_zh":"모범 답변","pinyin":"","ko":"뜻","point":"왜 더 나은지"}],
+"coach":"강사의 한마디(다음 연습 과제 포함)"}`;
+  const r = await askJSON(prompt,'default');
+  const sc={};let total=0;
+  for(const [k,,max] of CRIT){let v=Math.round(Number(r.scores?.[k])||0);v=Math.max(0,Math.min(max,v));sc[k]=v;total+=v;}
+  return {...r,scores:sc,total};
+}
+
+/* ================= DB ================= */
+async function loadProfile(){
+  if(!DB||!UID) return;
+  try{const s=await DB.doc(`data/users/${UID}/profile`).get();
+    if(s.exists){const d=s.data();S.me={...S.me,name:d.name||'',empNo:d.empNo||'',store:d.store||''};setWatermark();render();}
+  }catch(e){}
+}
+async function saveProfile(){
+  if(!DB||!UID) return;
+  try{await DB.doc(`data/users/${UID}/profile`).set({name:S.me.name,empNo:S.me.empNo,store:S.me.store});}catch(e){}
+}
+async function loadRecords(){
+  if(!DB){S.loaded=true;render();return}
+  try{
+    const snap=await DB.collection('results').get();
+    const out=[];
+    snap.docs.forEach(d=>{const v=d.data()||{};(v.attempts||[]).forEach(a=>out.push({...a,uid:d.id}))});
+    out.sort((a,b)=>b.at.localeCompare(a.at));
+    // 메모리 전용 기록 병합
+    S.records = out.concat(S.records.filter(r=>r.local));
+  }catch(e){}
+  S.loaded=true;render();
+}
+async function saveAttempt(att){
+  if(!DB||!UID){att.local=true;S.records.unshift(att);return false}
+  try{
+    const ref=DB.doc(`results/${UID}`);
+    const s=await ref.get();
+    const prev=s.exists?(s.data().attempts||[]):[];
+    const attempts=[att,...prev].slice(0,40);
+    await ref.set({name:S.me.name,empNo:S.me.empNo,store:S.me.store,updatedAt:att.at,attempts});
+    S.records=[{...att,uid:UID},...S.records.filter(r=>r.id!==att.id)];
+    return true;
+  }catch(e){att.local=true;S.records.unshift(att);return false}
+}
+
+/* ================= 렌더 ================= */
+function render(){
+  const tabs=[['start',S.session?'대화 진행':'평가 시작'],['phr','기본 멘트'],['hist','평가이력'],['rep','월간 보고서']];
+  $('#tabs').innerHTML=tabs.map(([k,l])=>`<button class="tab ${S.tab===k?'on':''}" data-tab="${k}">${l}</button>`).join('');
+  const v=$('#view');
+  if(S.tab==='start') v.innerHTML = S.result?renderResult():S.session?renderChat():renderStart();
+  else if(S.tab==='phr') v.innerHTML=renderPhrases();
+  else if(S.tab==='hist') v.innerHTML=renderHistory();
+  else v.innerHTML=renderReports();
+  if(S.tab==='start'&&S.session&&!S.result){const c=$('#chat');if(c)c.scrollTop=c.scrollHeight;const ta=$('#ans');if(ta&&!S.session.busy)ta.focus();}
+}
+
+const SLIDES=[
+  {t:'가상고객이 한 번에 한 질문씩 중국어로 묻습니다', n:'질문을 읽고(🔊 듣기) 중국어로 답변을 입력하세요',
+   body:`<div class="row" style="gap:16px"><div style="flex:1;min-width:180px" class="muted">질문은 한 번에 하나씩 나옵니다.<br>병음과 한국어 뜻도 볼 수 있어요.</div>
+   <div class="bubble-demo zh" style="flex:1;min-width:200px"><small>가상고객</small>这款精华适合什么肤质？<div class="muted" style="font-size:12px">이 에센스는 어떤 피부에 맞나요?</div></div></div>`,
+   cap:'평가 모드에서는 힌트 없이, 연습 모드에서는 모범 답변 힌트를 볼 수 있습니다'},
+  {t:'답변에 맞춰 다음 질문이 이어집니다', n:`총 ${TURNS}턴, 실제 매장 대화처럼 이어집니다`,
+   body:`<div class="bubble-demo zh" style="max-width:360px"><small>가상고객</small>我想送给妈妈，有礼盒装吗？</div>
+   <div class="bubble-demo zh" style="max-width:360px;margin:8px 0 0 auto;border-color:var(--ink)"><small style="color:var(--ink)">직원</small>有的，这款套装很适合送妈妈…</div>`,
+   cap:'외운 멘트보다, 질문을 듣고 니즈를 묻고 추가 제안까지 이어가는 흐름이 중요합니다'},
+  {t:'대화가 끝나면 AI가 바로 채점합니다', n:'8개 항목 100점 · 결과는 평가이력에 저장됩니다',
+   body:`<div class="row" style="gap:14px"><div class="box" style="flex:1;min-width:150px;background:#fff"><b>✓ 제출 완료</b><div class="muted" style="font-size:13px">항목별 점수와 교정 문장 제공</div></div>
+   <div class="box" style="flex:1;min-width:150px;background:#fff;border-color:var(--red)"><small class="muted">평가 결과</small><div style="font-size:30px;font-weight:900;color:var(--ink)">85 <small style="font-size:14px">/100</small> <span class="grade g-B" style="font-size:12px">B등급</span></div></div></div>`,
+   cap:'평가이력에서 점수 변화와 우선 개선 항목을 확인하세요'},
+];
+function renderStart(){
+  const s=SLIDES[S.slide];
+  const opt=(arr,sel)=>arr.map(o=>`<option value="${esc(o.id??o)}" ${(o.id??o)===sel?'selected':''}>${esc(o.name??o)}</option>`).join('');
+  return `<div class="card">
+    <h2>AI 실시간 중국어 응대 테스트</h2>
+    ${!SAMPLE?`<div class="notice">AI 연결을 준비하는 중입니다. 잠시 후에도 이 메시지가 보이면 claude.ai에 로그인된 상태로 페이지를 열어 주세요.</div>`:''}
+    <div class="how">
+      <div class="how-h"><span class="t">진행 방법 ${S.slide+1}</span><span>${S.slide+1} / 3</span></div>
+      <div class="how-b">
+        <button class="arr" data-act="prev" ${S.slide===0?'disabled':''}>‹</button>
+        <div class="slide"><h3>${s.t}</h3><div class="sbox"><div class="ttl"><span class="num">${S.slide+1}</span>${s.n}</div>${s.body}</div></div>
+        <button class="arr" data-act="next" ${S.slide===2?'disabled':''}>›</button>
+      </div>
+      <div class="how-cap">${s.cap}</div>
+      <div class="dots">${[0,1,2].map(i=>`<i class="${i===S.slide?'on':''}"></i>`).join('')}</div>
+    </div>
+    <div class="grid2">
+      <div><label class="f">사원 이름 <em>*</em></label><input class="inp" id="f-name" value="${esc(S.me.name)}" placeholder="홍길동"></div>
+      <div><label class="f">사번</label><input class="inp" id="f-emp" value="${esc(S.me.empNo)}" placeholder="E000000"></div>
+      <div><label class="f">매장명 <em>*</em></label><input class="inp" id="f-store" list="stores" value="${esc(S.me.store)}" placeholder="매장 선택 또는 입력"><datalist id="stores">${STORES.map(s=>`<option value="${s}">`).join('')}</datalist></div>
+      <div><label class="f">고객 유형</label><select class="inp" id="f-type"><option value="random">무작위</option>${opt(TYPES,S.me.typeId)}</select></div>
+    </div>
+    <label class="f">평가 품목 <em>*</em></label>
+    <select class="inp" id="f-item"><option value="">품목 선택</option>
+      <optgroup label="상품 안내">${opt(ITEMS.filter(i=>i.kind==='상품'),S.me.itemId)}</optgroup>
+      <optgroup label="문의 응대">${opt(ITEMS.filter(i=>i.kind==='문의'),S.me.itemId)}</optgroup>
+      <optgroup label="클레임 응대">${opt(ITEMS.filter(i=>i.kind==='클레임'),S.me.itemId)}</optgroup>
+    </select>
+    <label class="f">모드</label>
+    <div class="seg"><button data-mode="eval" class="${S.me.mode==='eval'?'on':''}">평가 (기록 저장)</button><button data-mode="practice" class="${S.me.mode==='practice'?'on':''}">연습 (힌트 사용 · 미저장)</button></div>
+    <button class="btn primary block" data-act="begin" ${SAMPLE?'':'disabled'}>대화 시작</button>
+  </div>`;
+}
+function renderChat(){
+  const ss=S.session;const answered=ss.turns.filter(t=>t.a!=null).length;
+  const msgs=ss.turns.map((t,i)=>`
+    <div class="msg c"><div class="who">가상고객 · Q${i+1} <button class="icon-btn" data-speak="${i}">🔊 듣기</button></div>
+      <div class="zhl zh">${esc(t.c.zh)}</div><div class="py">${esc(t.c.pinyin)}</div>
+      ${ss.showKo?`<div class="ko">${esc(t.c.ko)}</div>`:''}</div>
+    ${t.a!=null?`<div class="msg s zh">${esc(t.a)}</div>`:''}`).join('');
+  const last=ss.turns[ss.turns.length-1];const waiting=last&&last.a==null&&!ss.busy;
+  return `<div class="card">
+    <div class="chat-top">
+      <span class="pill">${esc(ss.item.name)}</span><span class="pill" style="background:var(--soft);color:var(--ink)">${esc(ss.type.name)}</span>
+      ${S.me.mode==='practice'?'<span class="pill" style="background:#FFF8E6;color:#8A6D1E">연습 모드</span>':''}
+      <div class="prog"><i style="width:${answered/TURNS*100}%"></i></div><b style="font-size:13px">${answered}/${TURNS}</b>
+    </div>
+    <div class="row" style="margin-bottom:6px">
+      <label style="font-size:13px;display:flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" id="showko" ${ss.showKo?'checked':''}> 한국어 뜻 보기</label>
+      <span class="spacer"></span>
+      <button class="btn sm ghost" data-act="quit">그만두기</button>
+    </div>
+    <div class="chat" id="chat">${msgs}${ss.busy?`<div class="typing"><span class="spin"></span>${ss.busy}</div>`:''}</div>
+    ${ss.hint?`<div class="hint"><b>💡 모범 답변 예시</b><div class="zhl zh">${esc(ss.hint.zh)}</div><div class="py">${esc(ss.hint.pinyin)}</div><div>${esc(ss.hint.ko)}</div><div class="muted" style="margin-top:4px">강사 TIP · ${esc(ss.hint.tip)}</div></div>`:''}
+    ${ss.error?`<div class="notice" style="margin-top:10px">${esc(ss.error)} <button class="btn sm" data-act="retry">다시 시도</button></div>`:''}
+    <div class="composer">
+      <textarea class="inp zh" id="ans" placeholder="중국어로 답변을 입력하세요 (Enter 전송 · Shift+Enter 줄바꿈)" ${waiting?'':'disabled'}>${esc(ss.draft||'')}</textarea>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${S.me.mode==='practice'?`<button class="btn sm" data-act="hint" ${waiting?'':'disabled'}>💡 힌트</button>`:''}
+        <button class="btn primary" data-act="send" ${waiting?'':'disabled'}>보내기</button>
+      </div>
+    </div>
+  </div>`;
+}
+function critBars(scores){
+  return `<div class="crit">${CRIT.map(([k,l,m])=>{const v=scores[k]||0;const low=v/m<.5;return `<div>${l}</div><div class="bar"><i class="${low?'low':''}" style="width:${v/m*100}%"></i></div><div style="text-align:right"><b>${v}</b><span class="muted">/${m}</span></div>`}).join('')}</div>`;
+}
+function resultBody(r){
+  return `<div class="score-hero"><div class="big">${r.total}<small> /100</small></div><div>${gradeTag(r.total)}<div style="margin-top:6px;font-weight:500">${esc(r.summary||'')}</div>
+     <div class="muted" style="font-size:13px;margin-top:4px">${esc(r.name)} · ${esc(r.store)} · ${esc(r.itemName)} · ${esc(r.typeName)} · ${fmtDT(r.at)}</div></div></div>
+    ${critBars(r.scores)}
+    <div class="two" style="margin-top:18px">
+      <div class="box"><h4>👍 잘한 점</h4><ul>${(r.good||[]).filter(Boolean).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+      <div class="box"><h4>🎯 개선할 점</h4><ul>${(r.improve||[]).filter(Boolean).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+    </div>
+    ${(r.corrections||[]).length?`<h3 style="font-size:15px;margin:20px 0 4px">✍️ 이렇게 말해 보세요</h3>${r.corrections.map(c=>`<div class="corr">
+      <div class="q zh">고객: ${esc(c.q)}</div><div class="mine zh">${esc(c.mine)}</div>
+      <div class="better zh">${esc(c.better_zh)} <button class="icon-btn" data-say="${esc(c.better_zh)}">🔊</button></div><div class="py" style="font-size:12px;color:var(--muted)">${esc(c.pinyin)}</div>
+      <div style="font-size:13px">${esc(c.ko)}</div><div class="muted" style="font-size:13px;margin-top:4px">→ ${esc(c.point)}</div></div>`).join('')}`:''}
+    ${r.coach?`<div class="box" style="margin-top:16px;background:var(--red-soft);border-color:#F6C9C7"><h4>🧑‍🏫 강사의 한마디</h4>${esc(r.coach)}</div>`:''}
+    ${r.transcript?`<details style="margin-top:14px"><summary style="cursor:pointer;font-weight:700">대화 전문 보기</summary>${r.transcript.map((t,i)=>`<div style="margin-top:8px;font-size:14px"><div class="zh"><b>Q${i+1}</b> ${esc(t.q)} <span class="muted">(${esc(t.ko)})</span></div><div class="zh" style="padding-left:24px">→ ${esc(t.a)}</div></div>`).join('')}</details>`:''}`;
+}
+function renderResult(){
+  const r=S.result;
+  return `<div class="card"><h2>평가 결과 ${r.practice?'<span class="pill" style="background:#FFF8E6;color:#8A6D1E">연습 · 미저장</span>':r.local?'<span class="pill">이 화면에서만 보관</span>':'<span class="pill" style="background:#E8F3EE;color:#2E7D5B">평가이력 저장됨</span>'}</h2>
+    ${resultBody(r)}
+    <div class="row" style="margin-top:18px"><button class="btn primary" data-act="again">같은 품목 다시 하기</button><button class="btn" data-act="new">다른 품목 선택</button><button class="btn ghost" data-act="tohist">평가이력 보기</button></div>
+  </div>`;
+}
+function renderPhrases(){
+  const cats=Object.keys(PHRASES);
+  return `<div class="card"><h2>기본 응대 멘트</h2>
+    <div class="muted" style="font-size:13px;margin-bottom:12px">🔊를 눌러 발음을 들어보세요. 평가 8개 항목에 대응하는 필수 멘트입니다.</div>
+    <div class="chips">${cats.map(c=>`<button class="chip ${S.phraseCat===c?'on':''}" data-cat="${c}">${c}</button>`).join('')}</div>
+    <div class="phr">${PHRASES[S.phraseCat].map(p=>`<div class="p"><div class="row"><div class="zhl zh" style="flex:1">${esc(p[0])}</div><button class="icon-btn" data-say="${esc(p[0])}">🔊</button></div>
+      <div class="py">${esc(p[1])}</div><div class="ko">${esc(p[2])}</div>${p[3]?`<div class="muted" style="font-size:12px;margin-top:6px">💬 ${esc(p[3])}</div>`:''}</div>`).join('')}</div>
+  </div>`;
+}
+function monthsAvail(){
+  const set=new Set(S.records.map(r=>r.at.slice(0,7)));set.add(new Date().toISOString().slice(0,7));
+  return [...set].sort().reverse();
+}
+function monthLabel(m){const [y,mm]=m.split('-');return `${y}년 ${Number(mm)}월`}
+function bestPerPerson(list){
+  const m={};list.forEach(r=>{const k=r.uid+'|'+r.name;if(!m[k]||r.total>m[k].total)m[k]=r});return Object.values(m);
+}
+function aggregate(list){
+  const best=bestPerPerson(list);
+  const g={A:0,B:0,C:0,D:0,E:0,X:0};best.forEach(r=>g[gradeOf(r.total)]++);
+  const avg=best.length?best.reduce((s,r)=>s+r.total,0)/best.length:0;
+  return {people:best.length,tries:list.length,avg,g,best};
+}
+function renderHistory(){
+  if(!S.loaded) return `<div class="card empty"><span class="spin"></span>평가이력을 불러오는 중…</div>`;
+  const inMonth=S.records.filter(r=>r.at.startsWith(S.month));
+  const filtered=inMonth.filter(r=>(!S.storeFilter||r.store===S.storeFilter)&&(!S.itemFilter||r.itemId===S.itemFilter));
+  const stores=[...new Set(inMonth.map(r=>r.store))].sort();
+  const all=aggregate(inMonth);
+  const storeRows=stores.map(s=>{const a=aggregate(inMonth.filter(r=>r.store===s));return [s,a]});
+  const gcells=a=>['A','B','C','D','E','X'].map(k=>`<td>${a.g[k]||'-'}</td>`).join('');
+  return `<div class="card">
+    <div class="row"><h2 style="margin:0">AI 응대 테스트 통계</h2><span class="spacer"></span><span class="pill">${monthLabel(S.month)} 기준</span></div>
+    ${!ADMIN?`<div class="muted" style="font-size:13px;margin-top:6px">내 기록만 표시됩니다. 관리자(편집 권한)는 전체 직원 기록을 봅니다.</div>`:''}
+    <div class="kpis" style="margin-top:12px"><span><b>${all.people}</b> 참여 인원</span><span><b>${all.tries}</b> 응시 건수</span><span><b>${all.avg.toFixed(1)}</b> 평균 점수 <span class="muted">(1인 최고점 기준)</span></span></div>
+    <div class="scroll"><table class="tbl light"><tr><th>매장</th><th>참여</th><th>응시</th><th>평균</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>외</th></tr>
+      ${storeRows.map(([s,a])=>`<tr><td><a href="#" data-store="${esc(s)}" style="color:var(--red-d)">${esc(s)}</a></td><td>${a.people}</td><td>${a.tries}</td><td>${a.avg.toFixed(1)}</td>${gcells(a)}</tr>`).join('')}
+      <tr class="total"><td>전체</td><td>${all.people}</td><td>${all.tries}</td><td>${all.avg.toFixed(1)}</td>${gcells(all)}</tr></table></div>
+  </div>
+  <div class="card">
+    <h2>📋 AI 응대 테스트 이력</h2>
+    <div class="row" style="margin-bottom:12px">
+      <select class="inp" style="width:auto" id="h-month">${monthsAvail().map(m=>`<option value="${m}" ${m===S.month?'selected':''}>${monthLabel(m)}</option>`).join('')}</select>
+      <select class="inp" style="width:auto" id="h-store"><option value="">전체 매장</option>${stores.map(s=>`<option ${s===S.storeFilter?'selected':''}>${esc(s)}</option>`).join('')}</select>
+      <select class="inp" style="width:auto" id="h-item"><option value="">전체 품목</option>${ITEMS.map(i=>`<option value="${i.id}" ${i.id===S.itemFilter?'selected':''}>${esc(i.name)}</option>`).join('')}</select>
+      <span class="spacer"></span>
+      <button class="btn sm ghost" data-act="csv">⬇ CSV 복사</button>
+      <button class="btn sm dark" data-act="reload">새로고침</button>
+    </div>
+    ${filtered.length?`<div class="scroll"><table class="tbl"><tr><th>사원명</th><th>매장명</th><th>평가 품목</th><th>고객 유형</th><th>점수</th><th>등급</th><th>평가일시</th></tr>
+      ${filtered.map(r=>`<tr class="click" data-rec="${esc(r.id)}"><td><b>${esc(r.name)}</b></td><td>${esc(r.store)}</td><td>${esc(r.itemName)}</td><td>${esc(r.typeName)}</td><td><b style="color:var(--red-d)">${r.total}점</b></td><td>${gradeTag(r.total)}</td><td>${fmtDT(r.at)}</td></tr>`).join('')}
+    </table></div>`:`<div class="empty">이 조건의 평가 기록이 없습니다.<br><button class="btn primary sm" style="margin-top:10px" data-act="gostart">평가 시작하기</button></div>`}
+  </div>`;
+}
+function reportScopes(){
+  const inMonth=S.records.filter(r=>r.at.startsWith(S.month));
+  const stores=[...new Set(inMonth.map(r=>r.store))].sort();
+  return [['전체',inMonth],...stores.map(s=>[s,inMonth.filter(r=>r.store===s)])];
+}
+function renderReports(){
+  if(!S.loaded) return `<div class="card empty"><span class="spin"></span>불러오는 중…</div>`;
+  if(S.openReport) return renderReport(S.openReport);
+  const sc=reportScopes();
+  return `<div class="card"><div class="row"><h2 style="margin:0">AI 응대 테스트 월간 보고서</h2><span class="spacer"></span>
+    <select class="inp" style="width:auto" id="r-month">${monthsAvail().map(m=>`<option value="${m}" ${m===S.month?'selected':''}>${monthLabel(m)}</option>`).join('')}</select></div>
+    ${!ADMIN?`<div class="muted" style="font-size:13px;margin-top:6px">내 기록 기준으로 작성됩니다.</div>`:''}
+    <div style="border:1px solid var(--line);border-radius:12px;margin-top:14px">
+    ${sc.map(([s,list])=>{const k=S.month+'|'+s;const has=S.reports[k];return `<div class="report-row"><b>${esc(s)}</b>
+      <span class="pill" style="${list.length?'':'background:var(--soft);color:var(--muted)'}">${list.length?'집계 가능':'응시 없음'}</span>
+      <span class="muted" style="font-size:13px;flex:1">${list.length?`응시 ${list.length}건 · ${has?'AI 피드백 포함':'AI 피드백 미작성'}`:'참여자가 없어 AI 피드백 없음'}</span>
+      <button class="btn sm ghost" data-report="${esc(s)}" ${list.length?'':'disabled'}>결과 보기</button></div>`}).join('')}
+    </div></div>`;
+}
+function renderReport(scope){
+  const list=(reportScopes().find(x=>x[0]===scope)||[0,[]])[1];
+  const a=aggregate(list);const k=S.month+'|'+scope;const fb=S.reports[k];
+  const critStats=CRIT.map(([key,l,m])=>{const vals=a.best.map(r=>r.scores[key]||0);const all=list.map(r=>r.scores[key]||0);
+    return {key,l,m,avg:vals.length?vals.reduce((s,v)=>s+v,0)/vals.length:0,zero:all.length?all.filter(v=>v===0).length/all.length*100:0}});
+  const weak=[...critStats].sort((x,y)=>x.avg/x.m-y.avg/y.m).slice(0,2);
+  const top=[...a.best].sort((x,y)=>y.total-x.total).slice(0,5);
+  const byStore=[...new Set(list.map(r=>r.store))].sort().map(s=>[s,aggregate(list.filter(r=>r.store===s))]);
+  const lowCnt=a.g.E+a.g.X;
+  return `<div class="card rep">
+    <div class="row"><button class="btn sm ghost" data-act="closerep">‹ 목록</button><span class="spacer"></span>
+      <button class="btn sm ghost" data-act="copyrep">보고서 텍스트 복사</button>
+      <button class="btn sm primary" data-act="aifb" ${S.fbBusy?'disabled':''}>${S.fbBusy?'<span class="spin"></span>작성 중':fb?'AI 피드백 다시 작성':'AI 피드백 작성'}</button></div>
+    <h2 style="margin-top:16px;font-size:19px">${monthLabel(S.month)} AI 중국어 응대 테스트 결과 — ${esc(scope)}</h2>
+    <div class="muted" style="font-size:13px">신라면세점 판매 직원 대상 · 현장 관리자 공유용 · 숫자는 자동 집계(1인 최고점 기준)</div>
+    <div class="lead" style="margin-top:12px">${a.people}명이 ${a.tries}회 응시해 평균 ${a.avg.toFixed(1)}점. 보완이 필요한 항목은 ${weak.map(w=>w.l).join('·')}입니다.</div>
+    <div class="statgrid">
+      <div class="stat"><small>참여 인원</small><b>${a.people}명</b></div>
+      <div class="stat"><small>응시 건수</small><b>${a.tries}건</b></div>
+      <div class="stat"><small>평균(1인 최고점)</small><b>${a.avg.toFixed(1)}점</b></div>
+      <div class="stat"><small>A등급(90+)</small><b>${a.g.A}명</b></div>
+      <div class="stat"><small>60점 미만</small><b>${lowCnt}명</b></div>
+    </div>
+    <h3>등급별 참여자 수</h3>
+    <div class="scroll"><table class="tbl light"><tr><th>등급</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>등급외</th></tr>
+      <tr><td>인원</td>${['A','B','C','D','E','X'].map(g=>`<td>${a.g[g]}</td>`).join('')}</tr></table></div>
+    <div class="muted" style="font-size:12px;margin-top:4px">A 90+ · B 80~89 · C 70~79 · D 60~69 · E 30~59 · 등급외 30 미만</div>
+    <h3>항목별 결과</h3>
+    <div class="scroll"><table class="tbl light"><tr><th>평가 항목</th><th>배점</th><th>평균</th><th>달성률</th><th>0점 비율</th></tr>
+      ${critStats.map(c=>`<tr><td>${c.l}</td><td>${c.m}</td><td>${c.avg.toFixed(1)}</td><td style="color:${c.avg/c.m<.5?'var(--red)':'inherit'};font-weight:700">${Math.round(c.avg/c.m*100)}%</td><td>${Math.round(c.zero)}%</td></tr>`).join('')}
+      <tr class="total"><td>합계</td><td>100</td><td>${a.avg.toFixed(1)}</td><td>-</td><td>-</td></tr></table></div>
+    ${byStore.length>1?`<h3>매장별 현황</h3><div class="scroll"><table class="tbl light"><tr><th>매장</th><th>참여</th><th>응시</th><th>평균</th></tr>
+      ${byStore.map(([s,x])=>`<tr><td>${esc(s)}</td><td>${x.people}</td><td>${x.tries}</td><td>${x.avg.toFixed(1)}</td></tr>`).join('')}</table></div>`:''}
+    <h3>우수 응시자 (상위 5명)</h3>
+    <div class="scroll"><table class="tbl light"><tr><th>순위</th><th>이름</th><th>매장</th><th>점수</th><th>등급</th></tr>
+      ${top.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(r.name)}</td><td>${esc(r.store)}</td><td>${r.total}</td><td>${gradeLabel(gradeOf(r.total))}</td></tr>`).join('')}</table></div>
+    <h3>AI 피드백 요약 · 현장 코칭 포인트</h3>
+    ${fb?`<div class="two"><div class="box"><h4>잘한 점</h4><ul>${fb.good.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+      <div class="box"><h4>개선할 점</h4><ul>${fb.improve.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div></div>
+      <div class="scroll" style="margin-top:12px"><table class="tbl light"><tr><th>코칭 포인트</th><th>근거</th><th>현장에서 할 일</th></tr>
+      ${fb.coaching.map(c=>`<tr><td style="white-space:normal">${esc(c.point)}</td><td style="white-space:normal">${esc(c.basis)}</td><td style="white-space:normal;text-align:left">${esc(c.action)}</td></tr>`).join('')}</table></div>
+      ${(fb.next||[]).length?`<ul style="margin-top:10px">${fb.next.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}`
+      :`<div class="muted">상단의 ‘AI 피드백 작성’을 누르면 개별 평가 피드백을 읽고 요약·코칭 포인트를 작성합니다.</div>`}
+  </div>`;
+}
+
+/* ================= 동작 ================= */
+function readForm(){
+  const g=id=>{const e=$(id);return e?e.value.trim():''};
+  if($('#f-name')){S.me.name=g('#f-name');S.me.empNo=g('#f-emp');S.me.store=g('#f-store');S.me.itemId=g('#f-item');S.me.typeId=g('#f-type')||'random';}
+}
+async function begin(){
+  readForm();
+  if(!S.me.name||!S.me.store||!S.me.itemId){toast('사원 이름, 매장명, 평가 품목을 입력해 주세요');return}
+  setWatermark();saveProfile();
+  const item=ITEMS.find(i=>i.id===S.me.itemId);
+  const type=S.me.typeId==='random'?TYPES[Math.floor(Math.random()*TYPES.length)]:TYPES.find(t=>t.id===S.me.typeId);
+  S.result=null;
+  S.session={item,type,turns:[],busy:'가상고객이 매장에 들어오는 중…',showKo:false,draft:''};
+  render();await nextCustomer();
+}
+async function nextCustomer(){
+  const ss=S.session;ss.error=null;ss.busy=ss.turns.length?'가상고객이 다음 질문을 생각하는 중…':ss.busy;render();
+  try{const c=await aiCustomer(ss);if(S.session!==ss)return;ss.turns.push({c,a:null});ss.busy=null;render();}
+  catch(e){if(S.session!==ss)return;ss.busy=null;ss.error=e.code==='rate_limited'?'요청이 많아 잠시 후 다시 시도해 주세요.':'가상고객 응답을 받지 못했습니다.';ss.retry='customer';render();}
+}
+async function send(){
+  const ss=S.session;const ta=$('#ans');const v=(ta?.value||'').trim();if(!v||ss.busy)return;
+  ss.turns[ss.turns.length-1].a=v;ss.draft='';ss.hint=null;
+  if(ss.turns.length>=TURNS){await finish();}else{await nextCustomer();}
+}
+async function finish(){
+  const ss=S.session;ss.error=null;ss.busy='AI 강사가 채점 중입니다… (10~20초)';render();
+  try{
+    const r=await aiEvaluate(ss);if(S.session!==ss)return;
+    const att={id:'a'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),at:new Date().toISOString(),
+      name:S.me.name,empNo:S.me.empNo,store:S.me.store,itemId:ss.item.id,itemName:ss.item.name,typeName:ss.type.name,
+      total:r.total,scores:r.scores,summary:r.summary||'',good:(r.good||[]).slice(0,4),improve:(r.improve||[]).slice(0,4),
+      corrections:(r.corrections||[]).slice(0,3),coach:r.coach||'',
+      transcript:ss.turns.map(t=>({q:t.c.zh,ko:t.c.ko,a:t.a}))};
+    if(S.me.mode==='practice'){att.practice=true;}
+    else{const ok=await saveAttempt(att);if(!ok)att.local=true;}
+    S.result=att;S.session=null;render();window.scrollTo(0,0);
+  }catch(e){ss.busy=null;ss.error='채점 결과를 받지 못했습니다.';ss.retry='eval';render();}
+}
+async function hint(){
+  const ss=S.session;ss.draft=$('#ans')?.value||'';ss.busy='모범 답변을 준비하는 중…';render();
+  try{ss.hint=await aiHint(ss);}catch(e){toast('힌트를 불러오지 못했습니다')}
+  ss.busy=null;render();
+}
+async function aiReport(scope){
+  const list=(reportScopes().find(x=>x[0]===scope)||[0,[]])[1];if(!list.length)return;
+  const a=aggregate(list);
+  const crit=CRIT.map(([k,l,m])=>{const all=list.map(r=>r.scores[k]||0);return `${l}: 평균 ${(all.reduce((s,v)=>s+v,0)/all.length).toFixed(1)}/${m}, 0점 비율 ${Math.round(all.filter(v=>v===0).length/all.length*100)}%`}).join('\n');
+  const fbs=list.slice(0,40).map(r=>`- [${r.itemName}/${r.total}점] 잘함: ${(r.good||[]).join('; ')} / 개선: ${(r.improve||[]).join('; ')}`).join('\n');
+  const prompt=`너는 10년 경력의 면세점 서비스 교육 강사다. 신라면세점 판매 직원들의 월간 'AI 중국어 응대 테스트' 결과를 현장 관리자에게 보고할 요약을 작성하라.
+범위: ${scope} / ${monthLabel(S.month)} / 참여 ${a.people}명, 응시 ${a.tries}건, 평균 ${a.avg.toFixed(1)}점(1인 최고점)
+항목별:
+${crit}
+개별 평가 피드백:
+${fbs}
+JSON만: {"good":["잘한 점 4~5개, 각 한 문장"],"improve":["개선할 점 4~5개"],"coaching":[{"point":"코칭 포인트","basis":"근거 수치","action":"현장에서 할 일(구체적 중국어 멘트 예 포함 가능)"}],"next":["후속 제안 2~3개"]} (coaching 3~4개)`;
+  S.fbBusy=true;render();
+  try{const r=await askJSON(prompt,'default');S.reports[S.month+'|'+scope]={good:r.good||[],improve:r.improve||[],coaching:r.coaching||[],next:r.next||[]};
+    if(DB&&ADMIN){try{await DB.doc(`reports/${(S.month+'_'+scope).replace(/[^A-Za-z0-9_\-.~:@+]/g,c=>'~'+c.charCodeAt(0).toString(16))}`).set({month:S.month,scope,...S.reports[S.month+'|'+scope]})}catch(e){}}
+  }catch(e){toast('AI 피드백을 작성하지 못했습니다')}
+  S.fbBusy=false;render();
+}
+async function loadReports(){
+  if(!DB) return;
+  try{const s=await DB.collection('reports').get();s.docs.forEach(d=>{const v=d.data();if(v&&v.month)S.reports[v.month+'|'+v.scope]={good:v.good||[],improve:v.improve||[],coaching:v.coaching||[],next:v.next||[]}});render();}catch(e){}
+}
+function reportText(scope){
+  const list=(reportScopes().find(x=>x[0]===scope)||[0,[]])[1];const a=aggregate(list);const fb=S.reports[S.month+'|'+scope];
+  let t=`[${monthLabel(S.month)} AI 중국어 응대 테스트 결과 — ${scope}]\n참여 ${a.people}명 · 응시 ${a.tries}건 · 평균 ${a.avg.toFixed(1)}점(1인 최고점)\n등급: A ${a.g.A} / B ${a.g.B} / C ${a.g.C} / D ${a.g.D} / E ${a.g.E} / 등급외 ${a.g.X}\n\n[항목별 평균]\n`;
+  CRIT.forEach(([k,l,m])=>{const v=a.best.map(r=>r.scores[k]||0);t+=`- ${l}: ${(v.reduce((s,x)=>s+x,0)/(v.length||1)).toFixed(1)}/${m}\n`});
+  if(fb){t+=`\n[잘한 점]\n${fb.good.map(x=>'- '+x).join('\n')}\n\n[개선할 점]\n${fb.improve.map(x=>'- '+x).join('\n')}\n\n[현장 코칭 포인트]\n${fb.coaching.map(c=>`- ${c.point} (${c.basis}) → ${c.action}`).join('\n')}\n`}
+  return t;
+}
+function openRecord(id){
+  const r=S.records.find(x=>x.id===id);if(!r)return;
+  $('#modal').innerHTML=`<div class="modal" data-act="closemodal"><div class="card" onclick="event.stopPropagation()"><div class="row"><h2 style="margin:0">평가 상세</h2><span class="spacer"></span><button class="btn sm" data-act="closemodal">닫기</button></div><div style="margin-top:12px">${resultBody(r)}</div></div></div>`;
+}
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-tab],[data-act],[data-mode],[data-speak],[data-say],[data-cat],[data-rec],[data-store],[data-report]');if(!t)return;
+  if(t.dataset.tab){readForm();S.tab=t.dataset.tab;if(t.dataset.tab!=='rep')S.openReport=null;render();return}
+  if(t.dataset.mode){readForm();S.me.mode=t.dataset.mode;render();return}
+  if(t.dataset.speak!=null){speak(S.session.turns[+t.dataset.speak].c.zh);return}
+  if(t.dataset.say){speak(t.dataset.say);return}
+  if(t.dataset.cat){S.phraseCat=t.dataset.cat;render();return}
+  if(t.dataset.rec){openRecord(t.dataset.rec);return}
+  if(t.dataset.store){e.preventDefault();S.storeFilter=t.dataset.store;render();return}
+  if(t.dataset.report){S.openReport=t.dataset.report;render();window.scrollTo(0,0);return}
+  const a=t.dataset.act;
+  if(a==='closemodal'){if(e.target===t||t.tagName==='BUTTON')$('#modal').innerHTML='';return}
+  if(a==='prev'){readForm();S.slide=Math.max(0,S.slide-1);render()}
+  else if(a==='next'){readForm();S.slide=Math.min(2,S.slide+1);render()}
+  else if(a==='begin')begin();
+  else if(a==='send')send();
+  else if(a==='hint')hint();
+  else if(a==='retry'){const ss=S.session;if(ss.retry==='eval')finish();else nextCustomer();}
+  else if(a==='quit'){S.session=null;render()}
+  else if(a==='again'){S.result=null;begin()}
+  else if(a==='new'){S.result=null;render()}
+  else if(a==='tohist'||a==='gostart'){S.result=null;S.tab=a==='tohist'?'hist':'start';render()}
+  else if(a==='reload'){S.loaded=false;render();loadRecords()}
+  else if(a==='csv'){
+    const rows=S.records.filter(r=>r.at.startsWith(S.month)&&(!S.storeFilter||r.store===S.storeFilter)&&(!S.itemFilter||r.itemId===S.itemFilter));
+    const head=['사원명','사번','매장명','평가품목','고객유형','점수','등급',...CRIT.map(c=>c[1]),'평가일시'];
+    const q=v=>`"${String(v??'').replace(/"/g,'""')}"`;
+    copyText([head,...rows.map(r=>[r.name,r.empNo,r.store,r.itemName,r.typeName,r.total,gradeLabel(gradeOf(r.total)),...CRIT.map(c=>r.scores[c[0]]),fmtDT(r.at)])].map(x=>x.map(q).join(',')).join('\n'));
+  }
+  else if(a==='closerep'){S.openReport=null;render()}
+  else if(a==='aifb')aiReport(S.openReport);
+  else if(a==='copyrep')copyText(reportText(S.openReport));
+});
+document.addEventListener('change',e=>{
+  const id=e.target.id;
+  if(id==='showko'&&S.session){S.session.draft=$('#ans')?.value||'';S.session.showKo=e.target.checked;render()}
+  else if(id==='h-month'||id==='r-month'){S.month=e.target.value;S.storeFilter='';render()}
+  else if(id==='h-store'){S.storeFilter=e.target.value;render()}
+  else if(id==='h-item'){S.itemFilter=e.target.value;render()}
+});
+document.addEventListener('keydown',e=>{
+  if(e.target.id==='ans'&&e.key==='Enter'&&!e.shiftKey&&!e.isComposing&&e.keyCode!==229){e.preventDefault();send()}
+});
+document.addEventListener('input',e=>{if(e.target.id==='ans'&&S.session)S.session.draft=e.target.value});
+
+render();
+
+/* ================= 플랫폼 연결 ================= */
+(async()=>{
+  try{ if(window.claude&&claude.use){
+    const [smp,db,usr]=await Promise.all([claude.use('sample'),claude.use('db'),claude.use('user')]);
+    SAMPLE=smp;DB=db;USER=usr;
+    if(USER){try{UID=await USER.id()}catch(e){} try{ADMIN=!!(await USER.canEdit())}catch(e){}}
+    render();
+    await loadProfile();await loadRecords();await loadReports();
+  } else {S.loaded=true;render()} }catch(e){S.loaded=true;render()}
+})();
+setTimeout(()=>{if(!S.loaded){S.loaded=true;render()}},12000);
+</script>
+</body>
+</html>
